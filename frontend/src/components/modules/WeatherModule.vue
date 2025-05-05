@@ -2,6 +2,7 @@
     <div class="module-card">
       <h2>🌤️ Weather Module</h2>
       <p>Loading weather data...</p>
+      <p>Api not implemented yet (it is not going to load any time soon) 😅</p>
     </div>
   </template>
   
