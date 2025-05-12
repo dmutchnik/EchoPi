@@ -15,7 +15,7 @@ sp = spotipy.Spotify(auth_manager=SpotifyOAuth(
 @bp.get("/current")
 def current_track():
     cur = sp.current_playback()
-    if cur and cur["is_playing"]:
+    if cur and cur.get("item"):
         t = cur["item"]
         return jsonify(
             name=t["name"],
@@ -26,8 +26,9 @@ def current_track():
             duration=t["duration_ms"]//1000,
             volume=cur["device"]["volume_percent"],
             progress=cur["progress_ms"]//1000,
+            is_playing=cur["is_playing"],
         )
-    return jsonify(message="Nothing is playing")
+    return jsonify({}), 204
 
 @bp.post("/control")
 def control():
