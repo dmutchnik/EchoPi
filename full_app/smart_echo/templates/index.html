@@ -1,0 +1,425 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Mock Echo</title>
+  <style>
+    :root {
+      --text-color: #ffffff;
+    }
+
+    body {
+      font-family: system-ui, sans-serif;
+      margin: 0;
+      padding: 0;
+      height: 100vh;
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      background-attachment: fixed;
+      background-color: #000;
+      color: var(--text-color);
+      transition: background-image 0.5s ease, color 0.3s;
+    }
+
+    .dark-mode {
+      --text-color: #000000;
+      background-color: #fff;
+    }
+
+    .top-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      height: 100%;
+      padding: 0 2rem;
+    }
+
+    .section {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      height: 100%;
+      max-width: 45%;
+    }
+
+    .left {
+      align-items: flex-start;
+      text-align: left;
+    }
+
+    .right {
+      align-items: flex-end;
+      text-align: right;
+    }
+
+    h1 {
+      font-size: 2rem;
+      margin: 0 0 1rem 0;
+      font-weight: 600;
+    }
+
+    h2 {
+      font-size: 2.5rem;
+      margin: 0.25rem 0;
+      font-weight: 700;
+    }
+
+    .button-container {
+      position: absolute;
+      top: 1rem;
+      right: 1rem;
+      display: flex;
+      gap: 0.5rem;
+    }
+
+    .toggle-button {
+      background-color: rgba(255, 255, 255, 0.6);
+      color: #000;
+      border: none;
+      padding: 0.5rem 1rem;
+      font-size: 1rem;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background-color 0.3s, color 0.3s;
+    }
+
+    body.dark-mode .toggle-button {
+      background-color: rgba(0, 0, 0, 0.6);
+      color: #fff;
+    }
+
+    @media (max-width: 768px) {
+      .top-bar {
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        padding: 2rem 1rem;
+      }
+
+      .section {
+        max-width: 100%;
+        align-items: center !important;
+        text-align: center !important;
+      }
+
+      .button-container {
+        flex-direction: column;
+        top: 0.5rem;
+        right: 0.5rem;
+      }
+    }
+
+/* ----------  Spotify Player Styles  ---------- */
+.player-wrapper{
+  position:relative;
+  min-height:100vh;
+  padding:40px;
+  background-size:cover;
+  background-position:center;
+  backdrop-filter:blur(8px);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  overflow:hidden;
+}
+.overlay{
+  position:absolute;inset:0;
+  background:rgba(0,0,0,.6);
+  backdrop-filter:blur(8px);
+  z-index:0;
+}
+.spotify-card {
+  position: relative;
+  display: flex;
+  gap: 24px;
+  background: rgba(0, 0, 0, 0.85);
+  border-radius: 18px;
+  padding: 24px;
+  color: #fff;
+  max-width: 520px;
+  width: 100%;
+  z-index: 1;
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.55);
+}
+
+#spotify-player {
+  margin-right: 2rem;   /* adjust to taste: 1rem, 2rem, etc. */
+}
+
+.album-art {
+  width: 120px;
+  height: 120px;
+  border-radius: 10px;
+  object-fit: cover;
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.6);
+  flex-shrink: 0;
+  transition: filter 0.3s ease, opacity 0.3s ease;
+}
+
+.album-art.is-placeholder {
+  opacity: 0.4;
+  filter: grayscale(100%);
+  background-color: #222;
+}
+
+.track-details {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.track-details h2 {
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+
+.artists {
+  font-size: 1rem;
+  color: #1db954;
+  margin: 4px 0;
+}
+
+.album {
+  font-size: 0.85rem;
+  color: #ccc;
+  margin-bottom: 8px;
+}
+
+.open-link {
+  display: inline-flex;
+  align-items: center;
+  font-size: 0.9rem;
+  text-decoration: none;
+  color: white;
+  background-color: #1db954;
+  padding: 6px 12px;
+  border-radius: 8px;
+  font-weight: 500;
+  gap: 6px;
+  transition: background 0.2s;
+}
+
+.open-link:hover {
+  background-color: #1ed760;
+}
+.icon{width:18px;height:18px;}
+.time-display{display:flex;justify-content:space-between;font-size:.8rem;margin:8px 0;color:#bbb;}
+.progress-container{height:8px;background:rgba(255,255,255,.2);border-radius:4px;overflow:hidden;}
+.progress-bar{height:100%;background:linear-gradient(90deg,#1db954,#1ed760);transition:width .05s linear;}
+.controls{display:flex;gap:12px;margin-top:16px;}
+.controls button{
+  font-size:1.4rem;background:rgba(255,255,255,.1);border:none;color:#fff;
+  padding:8px 12px;border-radius:8px;cursor:pointer;transition:background .2s;
+}
+.controls button:hover{background:rgba(255,255,255,.3);}
+/* ----------  End Spotify Styles  ---------- */
+
+html, body {
+  overflow-x: hidden;     /* hide rogue horizontal overflow */
+  max-width: 100vw;       /* don’t let any child expand the viewport */
+  box-sizing: border-box; /* include padding/border in width calc */
+}
+
+  </style>
+</head>
+<body>
+  <div class="button-container">
+    <button class="toggle-button" onclick="toggleTempUnit()">°F / °C</button>
+    <button class="toggle-button" onclick="toggleDarkMode()">🌙</button>
+  </div>
+
+  <div class="top-bar">
+    <div class="section left">
+      <h1 id="greeting">👋 Good {{ time_of_day }}, Milind</h1>
+      <h2 id="clock">{{ time }}</h2>
+      <h2 id="date">{{ date_string }}</h2>
+    </div>
+    <div class="section right">
+      <h2>The weather outside is <span id="temp" data-temp-f="{{ temperature_f }}">{{ temperature_f }}°F</span></h2>
+      <h2>It is {{ weather_type }} {{ weather_emoji }}</h2>
+
+      <!-- Spotify Player (inline) -->
+      <div id="spotify-player" style="display:none; margin-top:2rem;">
+        <div class="spotify-card">
+          <img id="album-art" class="album-art" />
+          <div class="track-details">
+            <h2 id="track-name">Nothing is playing</h2>
+            <p class="artists" id="track-artists">–––</p>
+            <p class="album"   id="track-album">–––</p>
+
+            <a id="open-link" class="open-link" href="#" target="_blank" style="display:none;">
+              <svg xmlns="http://www.w3.org/2000/svg" class="icon" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M7 6v12l10-6z"/>
+              </svg>
+              Play on Spotify
+            </a>
+
+            <div class="time-display">
+              <span id="track-progress">0:00</span>
+              <span id="track-duration">0:00</span>
+            </div>
+
+            <div class="progress-container">
+              <div id="progress-bar" class="progress-bar" style="width:0%;"></div>
+            </div>
+
+            <div class="controls">
+              <button onclick="spotifySend('previous')">⏮️</button>
+              <button onclick="spotifySend('pause')">⏸️</button>
+              <button onclick="spotifySend('play')">▶️</button>
+              <button onclick="spotifySend('next')">⏭️</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <script>
+    let isCelsius = false;
+    let tempF = null;
+
+    function updateTimeAndDate() {
+      const now = new Date();
+      let hours_orig = now.getHours();
+      const minutes = String(now.getMinutes()).padStart(2, '0');
+      const seconds = String(now.getSeconds()).padStart(2, '0');
+      const ampm = hours_orig >= 12 ? 'PM' : 'AM';
+      hours = hours_orig % 12;
+      hours = hours ? hours : 12; // Convert hour '0' to '12'
+      const time = `${hours}:${minutes}:${seconds} ${ampm}`;
+      const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+      const date = now.toLocaleDateString(undefined, options);
+
+      let greeting = 'evening';
+      if (hours_orig < 12) greeting = 'morning';
+      else if (hours_orig < 18) greeting = 'afternoon';
+
+      document.getElementById('clock').textContent = time;
+      document.getElementById('date').textContent = date;
+      document.getElementById('greeting').textContent = `👋 Good ${greeting}, Milind`;
+
+      const isDark = document.body.classList.contains('dark-mode');
+      const backgrounds = {
+        morning: {
+          light: 'https://www.hdwallpapers.in/download/beautiful_silhouette_view_during_evening_mountains_lakes_sky_background_4k_hd_nature-HD.jpg',
+          dark: 'https://www.hdwallpapers.in/download/closeup_view_of_lavender_flowers_field_ocean_coast_sea_blue_sky_landscape_4k_hd_nature-HD.jpg'
+        },
+        afternoon: {
+          light: 'https://www.hdwallpapers.in/download/beautiful_nice_landscape_view_of_green_red_yellow_autumn_trees_forest_house_reflection_on_lake_during_daytime_hd_nature-HD.jpg',
+          dark: 'https://www.hdwallpapers.in/download/tranquil_ocean_scene_at_sunset_with_gentle_waves_reflecting_the_warm_hues_of_orange_yellow_and_pink_in_the_sky_and_a_silhouetted_boat_drifting_4k_hd_nature-HD.jpg'
+        },
+        evening: {
+          light: 'https://www.hdwallpapers.in/download/beautiful_waterfalls_on_rocks_stones_green_leaves_trees_branches_forest_view_nature_background_4k_hd_nature-HD.jpg',
+          dark: 'https://www.hdwallpapers.in/download/road_between_desert_blue_sky_mountains_rocks_4k_hd_nature-HD.jpg'
+        }
+      };
+
+      const bgUrl = isDark ? backgrounds[greeting].dark : backgrounds[greeting].light;
+      document.body.style.backgroundImage = `url('${bgUrl}')`;
+
+      updateTemperatureDisplay();
+    }
+
+    function updateTemperatureDisplay() {
+      const displayTemp = isCelsius
+        ? `${Math.round((tempF - 32) * 5 / 9)}°C`
+        : `${tempF}°F`;
+      document.getElementById('temp').textContent = displayTemp;
+    }
+
+    function toggleDarkMode() {
+      document.body.classList.toggle('dark-mode');
+      const isDark = document.body.classList.contains('dark-mode');
+      localStorage.setItem('mode', isDark ? 'dark' : 'light');
+      updateTimeAndDate();
+    }
+
+    function toggleTempUnit() {
+      isCelsius = !isCelsius;
+      updateTemperatureDisplay();
+    }
+
+    window.onload = () => {
+      const tempElement = document.getElementById('temp');
+      tempF = parseFloat(tempElement.dataset.tempF);
+      const savedMode = localStorage.getItem('mode');
+      if (savedMode === 'dark') document.body.classList.add('dark-mode');
+      updateTimeAndDate();
+      setInterval(updateTimeAndDate, 1000);
+
+      setTimeout(() => {
+        location.reload();
+      }, 5 * 60 * 1000);
+    };
+  </script>
+
+<script>
+  /* ------------ Spotify Player Logic ------------ */
+  const placeholderImage = "https://upload.wikimedia.org/wikipedia/commons/1/19/Spotify_logo_without_text.svg";
+  let track = null, uiInterval=null, pollInterval=null;
+  
+  function spotifyFormatTime(sec){
+    const m=Math.floor(sec/60);
+    const s=Math.floor(sec%60).toString().padStart(2,"0");
+    return `${m}:${s}`;
+  }
+  function spotifyRender(){
+    const player=document.getElementById("spotify-player");
+    if(!track){player.style.display="none";return;}
+    player.style.display="block";
+  
+    document.getElementById("album-art").src=track.albumArt||placeholderImage;
+    document.getElementById("album-art").classList.toggle("is-placeholder",!track.albumArt);
+    document.getElementById("track-name").textContent=track.name;
+    document.getElementById("track-artists").textContent=track.artists.join(", ");
+    document.getElementById("track-album").textContent=track.album;
+  
+    const link=document.getElementById("open-link");
+    link.href=track.url; link.style.display="inline-flex";
+  
+    document.getElementById("track-progress").textContent=spotifyFormatTime(track.progress);
+    document.getElementById("track-duration").textContent=spotifyFormatTime(track.duration);
+    document.getElementById("progress-bar").style.width=`${(track.progress/track.duration)*100}%`;
+  }
+  function spotifyFetch(){
+    fetch("/api/spotify/current")
+      .then(r=>r.json())
+      .then(d=>{
+        if(d.name){
+          track={
+            name:d.name,artists:d.artists,album:d.album,
+            albumArt:d.album_art||placeholderImage,
+            url:d.url,duration:d.duration,progress:d.progress
+          };
+        }else{track=null;}
+        spotifyRender();
+      })
+      .catch(()=>{track=null;spotifyRender();});
+  }
+  function spotifyTick(){
+    if(track && track.progress<track.duration){
+      track.progress+=0.05; // 50 ms
+      spotifyRender();
+    }
+  }
+  function spotifySend(action){
+    fetch("/api/spotify/control",{method:"POST",
+          headers:{"Content-Type":"application/json"},
+          body:JSON.stringify({action})})
+      .then(r=>r.json())
+      .then(()=>spotifyFetch());
+  }
+  // kick off
+  spotifyFetch();
+  pollInterval = setInterval(spotifyFetch, 3000);
+  uiInterval   = setInterval(spotifyTick,    50);
+  /* ---------- End Spotify Player Logic ---------- */
+  </script>
+
+</body>
+</html>
