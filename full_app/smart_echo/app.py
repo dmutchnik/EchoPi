@@ -6,6 +6,11 @@ from echopi.weather import (
     time_of_day, time_string, date_string
 )
 from echopi.spotify.routes import bp as spotify_bp
+import requests
+import threading
+from time import sleep
+
+URL_READ_COMMANDS = "https://ntfy.sh/newCommandFromEchoPi/raw"
 
 app = Flask(__name__, template_folder="templates")
 app.register_blueprint(spotify_bp)
@@ -24,5 +29,38 @@ def index():
                            weather_emoji=wemoji[0],
                            weather_type=wemoji[1])
 
+
+
+def listen_to_stream():
+    """
+    Listen to a stream of messages from the ntfy.sh service.
+    Manage the calls to the api.
+    """
+    resp = requests.get(URL_READ_COMMANDS, stream=True)
+    for line in resp.iter_lines():
+        if line:
+            # Code that checks the message and calls the api 
+            line = line.decode()
+            if line.contains("play"):
+                print("\n[Message] Play command received")
+            elif line.contains("pause"):
+                print("\n[Message] Pause command received")
+            elif line.contains("next"):
+                print("\n[Message] Next command received")
+            elif line.contains("previous"):
+                print("\n[Message] Previous command received")
+
+def send_current_song():
+    """
+    Send the current title of the song to the ntfy.sh service.
+    """
+    pass
+
+
 if __name__ == "__main__":
+
+    thread = threading.Thread(target=listen_to_stream, daemon=True)
+    thread.start()
+    counter = 0
+
     app.run(host="0.0.0.0", port=5000, debug=True)
