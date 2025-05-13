@@ -142,12 +142,13 @@ try:
         if mute_btn.value == 1: # If it is a touch sensor 0, it traditional button 1
             mute = not mute
             pwm.ChangeDutyCycle(0)
+            if mute:
+                send_message("pause")
+            else:
+                send_message("play")
             show_volume(volume, mute)
             sleep(0.2)  # Debounce delay
-        if mute:
-            send_message("pause")
-        else:
-            send_message("play")
+            
 
         sleep(0.001)
 finally:
