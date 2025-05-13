@@ -17,16 +17,16 @@ def listen_to_stream(app: flask.Flask):
             match line_decoded:
                 case "play":
                         print("[Message] Play")
-                        app.post("/api/control", json={"action": "play"})
+                        app.post("/control", json={"action": "play"})
                 case "pause":
                         print("[Message] Pause")
-                        app.post("/api/control", json={"action": "pause"})
+                        app.post("/control", json={"action": "pause"})
                 case "next":
                         print("[Message] Next")
-                        app.post("/api/control", json={"action": "next"})
+                        app.post("/control", json={"action": "next"})
                 case "previous":
                         print("[Message] Previous")
-                        app.post("/api/control", json={"action": "previous"})
+                        app.post("/control", json={"action": "previous"})
                 case _:
                     print(f"[Message] Unknown command: {line_decoded}")
 

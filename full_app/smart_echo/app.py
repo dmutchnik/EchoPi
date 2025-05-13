@@ -6,7 +6,7 @@ from echopi.weather import (
     time_of_day, time_string, date_string
 )
 from echopi.spotify.routes import bp as spotify_bp
-from api_receiver import listen_to_stream
+from smart_echo.api_receiver import listen_to_stream
 import threading
 
 HOST = "0.0.0.0"
@@ -32,7 +32,7 @@ def index():
 
 
 if __name__ == "__main__":
-    thread = threading.Thread(target=listen_to_stream, args=(app), daemon=True)
+    thread = threading.Thread(target=listen_to_stream, args=(app,), daemon=True)
     thread.start()
 
     app.run(host=HOST, port=PORT, debug=True)
