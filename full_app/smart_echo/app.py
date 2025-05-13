@@ -40,15 +40,18 @@ def listen_to_stream():
     for line in resp.iter_lines():
         if line:
             # Code that checks the message and calls the api 
-            line = line.decode()
-            if line.contains("play"):
-                print("\n[Message] Play command received")
-            elif line.contains("pause"):
-                print("\n[Message] Pause command received")
-            elif line.contains("next"):
-                print("\n[Message] Next command received")
-            elif line.contains("previous"):
-                print("\n[Message] Previous command received")
+            line_decoded = line.decode()
+            match line_decoded:
+                case "play":
+                    print("[Message] Play command received")
+                case "pause":
+                    print("[Message] Pause command received")
+                case "next":
+                    print("[Message] Next command received")
+                case "previous":
+                    print("[Message] Previous command received")
+                case _:
+                    print(f"[Message] Unknown command: {line_decoded}")
 
 def send_current_song():
     """
