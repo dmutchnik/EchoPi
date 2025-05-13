@@ -119,10 +119,12 @@ try:
         if prev_song_btn.value == 0:
             mute = False
             send_message("previous")
+            sleep(0.2)
 
         if next_song_btn.value == 0:
             mute = False
             send_message("next")
+            sleep(0.2)
 
         # Rotary encoder logic
         clkState = GPIO.input(CLK_PIN_ROTARY_ENCODER)
