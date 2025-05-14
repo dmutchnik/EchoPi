@@ -34,9 +34,7 @@ def current_track():
 def control():
     action = request.json.get("action")
     match action:
-        case "play":
-            print("HOII")
-            sp.start_playback() 
+        case "play":        sp.start_playback() 
         case "pause":       sp.pause_playback()
         case "next":        sp.next_track()
         case "previous":    sp.previous_track()
