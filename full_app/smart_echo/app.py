@@ -32,7 +32,12 @@ def index():
 
 
 if __name__ == "__main__":
+
     thread = threading.Thread(target=listen_to_stream, args=(app,), daemon=True)
     thread.start()
+    print(1)
 
     app.run(host=HOST, port=PORT, debug=True)
+    
+    
+    print(1222)
