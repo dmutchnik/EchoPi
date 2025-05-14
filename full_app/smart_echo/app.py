@@ -6,6 +6,12 @@ from echopi.weather import (
     time_of_day, time_string, date_string
 )
 from echopi.spotify.routes import bp as spotify_bp
+from smart_echo.api_receiver import listen_to_stream
+import threading
+
+HOST = "0.0.0.0"
+PORT = 5000
+
 
 app = Flask(__name__, template_folder="templates")
 app.register_blueprint(spotify_bp)
@@ -24,5 +30,14 @@ def index():
                            weather_emoji=wemoji[0],
                            weather_type=wemoji[1])
 
+
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=5000, debug=True)
+
+    thread = threading.Thread(target=listen_to_stream, args=(app,), daemon=True)
+    thread.start()
+    print(1)
+
+    app.run(host=HOST, port=PORT, debug=True)
+    
+    
+    print(1222)
